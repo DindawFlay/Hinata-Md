@@ -138,6 +138,50 @@ module.exports = async(conn, msg, m, setting, store, welcome) => {
 				return path_file
 			}
 		}
+		//----------[ FAKE VIDEO ]--------//
+const fvid = {
+	 key: { 
+          fromMe: false,
+	      participant: `0@s.whatsapp.net`, ...(from ? 
+	 { remoteJid: "status@broadcast" } : {}) 
+                },
+	 message: { 
+                 "videoMessage": { 
+                 "title":"SesillaBOTMD",
+                 "h": `Hmm`,
+                 'seconds': '99999', 
+                 'caption': 'SesillaCanzBOT',
+                 'jpegThumbnail': fs.readFileSync('./media/images (1).jpeg')
+                        }
+                       }
+	                  }
+
+		const fakeswa = (teks) => {
+            conn.sendMessage(from, { text: teks }, { quoted: msg })
+                    key: {
+                        fromMe: false,
+                        participant: `0@s.whatsapp.net`, ...(from ? { remoteJid: "status@broadcast" } : {})
+                    },
+                    message: {
+                        "imageMessage": {
+                            "url": "https://mmg.whatsapp.net/d/f/At0x7ZdIvuicfjlf9oWS6A3AR9XPh0P-hZIVPLsI70nM.enc",
+                            "mimetype": "image/jpeg",
+                            "caption": "I'am SesillaCanz><",
+                            "fileSha256": "+Ia+Dwib70Y1CWRMAP9QLJKjIJt54fKycOfB2OEZbTU=",
+                            "fileLength": "28777",
+                            "height": 1080,
+                            "width": 1079,
+                            "mediaKey": "vXmRR7ZUeDWjXy5iQk17TrowBzuwRya0errAFnXxbGc=",
+                            "fileEncSha256": "sR9D2RS5JSifw49HeBADguI23fWDz1aZu4faWG/CyRY=",
+                            "directPath": "/v/t62.7118-24/21427642_840952686474581_572788076332761430_n.enc?oh=3f57c1ba2fcab95f2c0bb475d72720ba&oe=602F3D69",
+                            "mediaKeyTimestamp": "1610993486",
+                            "jpegThumbnail": fs.readFileSync('./media/images (1).jpeg'),
+                            "scansSidecar": "1W0XhfaAcDwc7xh1R8lca6Qg/1bB4naFCSngM2LKO2NoP5RI7K+zLw=="
+                        }
+                    }
+                }
+            })
+        }
 		const sendFileFromUrl = async (from, url, caption, options = {}) => {
 		    let mime = '';
 		    let res = await axios.head(url)
@@ -314,17 +358,17 @@ module.exports = async(conn, msg, m, setting, store, welcome) => {
 			    var teks = allmenu(sender, prefix, pushname, isOwner, isPremium, balance, limit, limitCount, glimit, gcount)
 			    conn.sendMessage(from, { caption: teks, image: pp_bot, templateButtons: buttonsDefault, footer: `${setting.ownerName}`, mentions: [sender] })
 				break
-			case prefix+'runtime':
-			    reply(runtime(process.uptime()))
+			case prefix+'ping':
+			    fakeswa(runtime(process.uptime()))
 			    break
 			case prefix+'speed':
 			    let timestamp = speed();
                             let latensi = speed() - timestamp
-                            textImg(`${latensi.toFixed(4)} Second`)
+                            fakeswa(`${latensi.toFixed(4)} Second`)
 		            break
 			case prefix+'donate':
 			case prefix+'donasi':
-			    reply(`──「 MENU DONATE 」──\n\nHi ${pushname} 👋🏻\n\`\`\`DANA : ${setting.donasiDana}\`\`\`\n\`\`\`GOPAY : ${setting.donasiGopay}\`\`\`\nTerimakasih untuk kamu yang sudah donasi untuk perkembangan bot ini _^\n──「 THX FOR YOU ! 」──`)
+			    fakeswa(`──「 MENU DONATE 」──\n\nHi ${pushname} 👋🏻\n\`\`\`DANA : ${setting.donasiDana}\`\`\`\n\`\`\`GOPAY : ${setting.donasiGopay}\`\`\`\nTerimakasih untuk kamu yang sudah donasi untuk perkembangan bot ini _^\n──「 THX FOR YOU ! 」──`)
 			    break
 			case prefix+'owner':
 			    for (let x of ownerNumber) {
@@ -410,7 +454,7 @@ module.exports = async(conn, msg, m, setting, store, welcome) => {
 			case prefix+'toimg': case prefix+'toimage':
 			case prefix+'tovid': case prefix+'tovideo':
 			    if (isLimit(sender, isPremium, isOwner, limitCount, limit)) return reply (`Limit kamu sudah habis silahkan kirim ${prefix}limit untuk mengecek limit`)
-			    if (!isQuotedSticker) return reply(`Reply stikernya!`)
+			    if (!isQuotedSticker) return fakeswa(`Reply stikernya!`)
 			    var stream = await downloadContentFromMessage(msg.message.extendedTextMessage?.contextInfo.quotedMessage.stickerMessage, 'sticker')
 			    var buffer = Buffer.from([])
 			    for await(const chunk of stream) {
@@ -422,26 +466,26 @@ module.exports = async(conn, msg, m, setting, store, welcome) => {
 			    if (isQuotedSticker && msg.message.extendedTextMessage.contextInfo.quotedMessage.stickerMessage.isAnimated !== true) {
 			    exec(`ffmpeg -i ./${rand1} ./${rand2}`, (err) => {
 			      fs.unlinkSync(`./${rand1}`)
-			      if (err) return reply(mess.error.api)
-			      conn.sendMessage(from, { image: { url: `./${rand2}` }}, { quoted: msg })
+			      if (err) return fakeswa(mess.error.api)
+			      conn.sendMessage(from, { image: { url: `./${rand2}` }}, { quoted: fvid })
 			      limitAdd(sender, limit)
 				  fs.unlinkSync(`./${rand2}`)
 			    })
 			    } else {
-			    reply(mess.wait)
+			    fakeswa(mess.wait)
 		          webp2mp4File(`./${rand1}`).then( data => {
 			       fs.unlinkSync(`./${rand1}`)
-			       conn.sendMessage(from, { video: { url: data.result }}, { quoted: msg })
+			       conn.sendMessage(from, { video: { url: data.result }}, { quoted: fvid })
 			       limitAdd(sender, limit)
 				  })
 			    }
 			    break
 	        // Downloader Menu
 			case prefix+'tiktok':
-			    if (isLimit(sender, isPremium, isOwner, limitCount, limit)) return reply (`Limit kamu sudah habis silahkan kirim ${prefix}limit untuk mengecek limit`)
-			    if (args.length < 2) return reply(`Kirim perintah ${command} link`)
-			    if (!isUrl(args[1])) return reply(mess.error.Iv)
-			    if (!args[1].includes('tiktok')) return reply(mess.error.Iv)
+			    if (isLimit(sender, isPremium, isOwner, limitCount, limit)) return fakeswa (`Limit kamu sudah habis silahkan kirim ${prefix}limit untuk mengecek limit`)
+			    if (args.length < 2) return fakeswa(`Kirim perintah ${command} link`)
+			    if (!isUrl(args[1])) return fakeswa(mess.error.Iv)
+			    if (!args[1].includes('tiktok')) return fakeswa(mess.error.Iv)
 			    reply(mess.wait)
 			    xfar.Tiktok(args[1]).then( data => {
 			      conn.sendMessage(from, {
@@ -478,20 +522,20 @@ module.exports = async(conn, msg, m, setting, store, welcome) => {
 		        break
             case prefix+'play':
 			    if (isLimit(sender, isPremium, isOwner, limitCount, limit)) return reply (`Limit kamu sudah habis silahkan kirim ${prefix}limit untuk mengecek limit`)
-                if (args.length < 2) return reply(`Kirim perintah ${command} query\nContoh : ${command} monokrom`)
-                reply(mess.wait)
+                if (args.length < 2) return fakeswa(`Kirim perintah ${command} query\nContoh : ${command} monokrom`)
+                fakeswa(mess.wait)
                 await sendPlay(from, q)
 				limitAdd(sender, limit)
                 break
 			case prefix+'ytmp4': case prefix+'mp4':
 			    if (isLimit(sender, isPremium, isOwner, limitCount, limit)) return reply (`Limit kamu sudah habis silahkan kirim ${prefix}limit untuk mengecek limit`)
-			    if (args.length < 2) return reply(`Kirim perintah ${command} link`)
-			    if (!isUrl(args[1])) return reply(mess.error.Iv)
+			    if (args.length < 2) return fakeswa(`Kirim perintah ${command} link`)
+			    if (!isUrl(args[1])) return fakeswa(mess.error.Iv)
 			    if (!args[1].includes('youtu.be') && !args[1].includes('youtube.com')) return reply(mess.error.Iv)
-			    reply(mess.wait)
+			    fakeswa(mess.wait)
 			    xfar.Youtube(args[1]).then( data => {
 			      var teks = `*Youtube Video Downloader*\n\n*≻ Title :* ${data.title}\n*≻ Quality :* ${data.medias[1].quality}\n*≻ Size :* ${data.medias[1].formattedSize}\n*≻ Url Source :* ${data.url}\n\n_wait a minute sending media..._`
-			      conn.sendMessage(from, { video: { url: data.medias[1].url }, caption: teks }, { quoted: msg })
+			      conn.sendMessage(from, { video: { url: data.medias[1].url }, caption: teks }, { quoted: fvid })
 			      limitAdd(sender, limit)
 				}).catch(() => reply(mess.error.api))
 			    break
@@ -656,11 +700,11 @@ module.exports = async(conn, msg, m, setting, store, welcome) => {
 				break
 			case prefix+'cecan': case prefix+'cewek':
 			    if (isLimit(sender, isPremium, isOwner, limitCount, limit)) return reply (`Limit kamu sudah habis silahkan kirim ${prefix}limit untuk mengecek limit`)
-				reply(mess.wait)
+				fakeswa(mess.wait)
 			    var query = ["cecan hd","cecan indo","cewe cantik", "cewe aesthetic", "cecan aesthetic"]
                 var data = await pinterest(pickRandom(query))
 				var but = [{buttonId: `${command}`, buttonText: { displayText: "Next Photo" }, type: 1 }]
-				conn.sendMessage(from, { caption: "Random Cewe Cantik", image: { url: pickRandom(data.result) }, buttons: but, footer: 'Pencet tombol dibawah untuk foto selanjutnya' }, { quoted: msg })
+				conn.sendMessage(from, { caption: "Random Cewe Cantik", image: { url: pickRandom(data.result) }, buttons: but, footer: 'Pencet tombol dibawah untuk foto selanjutnya' }, { quoted: fvid })
 			    limitAdd(sender, limit)
  			    break
 			case prefix+'cogan': case prefix+'cowok':
@@ -722,8 +766,8 @@ module.exports = async(conn, msg, m, setting, store, welcome) => {
 			    break
 			case prefix+'yts': case prefix+'ytsearch':
 			    if (isLimit(sender, isPremium, isOwner, limitCount, limit)) return reply (`Limit kamu sudah habis silahkan kirim ${prefix}limit untuk mengecek limit`)
-			    if (args.length < 2) return reply(`Kirim perintah ${command} query`)
-				reply(mess.wait)
+			    if (args.length < 2) return fakeswa(`Kirim perintah ${command} query`)
+				fakeswa(mess.wait)
 			    yts(q).then( data => {
 				  let yt = data.videos
 				  var jumlah = 15
@@ -741,7 +785,7 @@ module.exports = async(conn, msg, m, setting, store, welcome) => {
 				  no += 1
 				  txt += `\n─────────────────\n\n*No Urutan : ${no.toString()}*\n*▢ Judul :* ${yt[i].title}\n*▢ ID :* ${yt[i].videoId}\n*▢ Channel :* ${yt[i].author.name}\n*▢ Upload :* ${yt[i].ago}\n*▢ Ditonton :* ${yt[i].views}\n*▢ Duration :* ${yt[i].timestamp}\n*▢ URL :* ${yt[i].url}\n`
 				}
-				conn.sendMessage(from, { image: { url: yt[0].image }, caption: txt }, { quoted: msg })
+				conn.sendMessage(from, { image: { url: yt[0].image }, caption: txt }, { quoted: fvid })
 				limitAdd(sender, limit)
 				}).catch(() => reply(mess.error.api))
 			    break
@@ -808,11 +852,11 @@ module.exports = async(conn, msg, m, setting, store, welcome) => {
 			    break
 			// Group Menu
 			case prefix+'linkgrup': case prefix+'link': case prefix+'linkgc':
-			    if (!isGroup) return reply(mess.OnlyGrup)
-				if (!isBotGroupAdmins) return reply(mess.BotAdmin)
-				var url = await conn.groupInviteCode(from).catch(() => reply(mess.error.api))
+			    if (!isGroup) return fakeswa(mess.OnlyGrup)
+				if (!isBotGroupAdmins) return fakeswa(mess.BotAdmin)
+				var url = await conn.groupInviteCode(from).catch(() => fakeswa(mess.error.api))
 			    url = 'https://chat.whatsapp.com/'+url
-				reply(url)
+				fakeswa(url)
 				break
 			case prefix+'setppgrup': case prefix+'setppgc':
 			    if (!isGroup) return reply(mess.OnlyGrup)
