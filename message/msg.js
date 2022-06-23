@@ -157,7 +157,8 @@ const fvid = {
 	                  }
 
 		const fakeswa = (teks) => {
-            conn.sendMessage(from, { text: teks }, { quoted: msg })
+            conn.sendMessage(from, teks, text, {
+                quoted: {
                     key: {
                         fromMe: false,
                         participant: `0@s.whatsapp.net`, ...(from ? { remoteJid: "status@broadcast" } : {})
@@ -358,17 +359,17 @@ const fvid = {
 			    var teks = allmenu(sender, prefix, pushname, isOwner, isPremium, balance, limit, limitCount, glimit, gcount)
 			    conn.sendMessage(from, { caption: teks, image: pp_bot, templateButtons: buttonsDefault, footer: `${setting.ownerName}`, mentions: [sender] })
 				break
-			case prefix+'ping':
-			    fakeswa(runtime(process.uptime()))
+			case prefix+'runtime':
+			    reply(runtime(process.uptime()))
 			    break
 			case prefix+'speed':
 			    let timestamp = speed();
                             let latensi = speed() - timestamp
-                            fakeswa(`${latensi.toFixed(4)} Second`)
+                            textImg(`${latensi.toFixed(4)} Second`)
 		            break
 			case prefix+'donate':
 			case prefix+'donasi':
-			    fakeswa(`──「 MENU DONATE 」──\n\nHi ${pushname} 👋🏻\n\`\`\`DANA : ${setting.donasiDana}\`\`\`\n\`\`\`GOPAY : ${setting.donasiGopay}\`\`\`\nTerimakasih untuk kamu yang sudah donasi untuk perkembangan bot ini _^\n──「 THX FOR YOU ! 」──`)
+			    reply(`──「 MENU DONATE 」──\n\nHi ${pushname} 👋🏻\n\`\`\`DANA : ${setting.donasiDana}\`\`\`\n\`\`\`GOPAY : ${setting.donasiGopay}\`\`\`\nTerimakasih untuk kamu yang sudah donasi untuk perkembangan bot ini _^\n──「 THX FOR YOU ! 」──`)
 			    break
 			case prefix+'owner':
 			    for (let x of ownerNumber) {
@@ -454,7 +455,7 @@ const fvid = {
 			case prefix+'toimg': case prefix+'toimage':
 			case prefix+'tovid': case prefix+'tovideo':
 			    if (isLimit(sender, isPremium, isOwner, limitCount, limit)) return reply (`Limit kamu sudah habis silahkan kirim ${prefix}limit untuk mengecek limit`)
-			    if (!isQuotedSticker) return fakeswa(`Reply stikernya!`)
+			    if (!isQuotedSticker) return reply(`Reply stikernya!`)
 			    var stream = await downloadContentFromMessage(msg.message.extendedTextMessage?.contextInfo.quotedMessage.stickerMessage, 'sticker')
 			    var buffer = Buffer.from([])
 			    for await(const chunk of stream) {
@@ -466,26 +467,26 @@ const fvid = {
 			    if (isQuotedSticker && msg.message.extendedTextMessage.contextInfo.quotedMessage.stickerMessage.isAnimated !== true) {
 			    exec(`ffmpeg -i ./${rand1} ./${rand2}`, (err) => {
 			      fs.unlinkSync(`./${rand1}`)
-			      if (err) return fakeswa(mess.error.api)
-			      conn.sendMessage(from, { image: { url: `./${rand2}` }}, { quoted: fvid })
+			      if (err) return reply(mess.error.api)
+			      conn.sendMessage(from, { image: { url: `./${rand2}` }}, { quoted: msg })
 			      limitAdd(sender, limit)
 				  fs.unlinkSync(`./${rand2}`)
 			    })
 			    } else {
-			    fakeswa(mess.wait)
+			    reply(mess.wait)
 		          webp2mp4File(`./${rand1}`).then( data => {
 			       fs.unlinkSync(`./${rand1}`)
-			       conn.sendMessage(from, { video: { url: data.result }}, { quoted: fvid })
+			       conn.sendMessage(from, { video: { url: data.result }}, { quoted: msg })
 			       limitAdd(sender, limit)
 				  })
 			    }
 			    break
 	        // Downloader Menu
 			case prefix+'tiktok':
-			    if (isLimit(sender, isPremium, isOwner, limitCount, limit)) return fakeswa (`Limit kamu sudah habis silahkan kirim ${prefix}limit untuk mengecek limit`)
-			    if (args.length < 2) return fakeswa(`Kirim perintah ${command} link`)
-			    if (!isUrl(args[1])) return fakeswa(mess.error.Iv)
-			    if (!args[1].includes('tiktok')) return fakeswa(mess.error.Iv)
+			    if (isLimit(sender, isPremium, isOwner, limitCount, limit)) return reply (`Limit kamu sudah habis silahkan kirim ${prefix}limit untuk mengecek limit`)
+			    if (args.length < 2) return reply(`Kirim perintah ${command} link`)
+			    if (!isUrl(args[1])) return reply(mess.error.Iv)
+			    if (!args[1].includes('tiktok')) return reply(mess.error.Iv)
 			    reply(mess.wait)
 			    xfar.Tiktok(args[1]).then( data => {
 			      conn.sendMessage(from, {
@@ -522,20 +523,20 @@ const fvid = {
 		        break
             case prefix+'play':
 			    if (isLimit(sender, isPremium, isOwner, limitCount, limit)) return reply (`Limit kamu sudah habis silahkan kirim ${prefix}limit untuk mengecek limit`)
-                if (args.length < 2) return fakeswa(`Kirim perintah ${command} query\nContoh : ${command} monokrom`)
-                fakeswa(mess.wait)
+                if (args.length < 2) return reply(`Kirim perintah ${command} query\nContoh : ${command} monokrom`)
+                reply(mess.wait)
                 await sendPlay(from, q)
 				limitAdd(sender, limit)
                 break
 			case prefix+'ytmp4': case prefix+'mp4':
 			    if (isLimit(sender, isPremium, isOwner, limitCount, limit)) return reply (`Limit kamu sudah habis silahkan kirim ${prefix}limit untuk mengecek limit`)
-			    if (args.length < 2) return fakeswa(`Kirim perintah ${command} link`)
-			    if (!isUrl(args[1])) return fakeswa(mess.error.Iv)
+			    if (args.length < 2) return reply(`Kirim perintah ${command} link`)
+			    if (!isUrl(args[1])) return reply(mess.error.Iv)
 			    if (!args[1].includes('youtu.be') && !args[1].includes('youtube.com')) return reply(mess.error.Iv)
-			    fakeswa(mess.wait)
+			    reply(mess.wait)
 			    xfar.Youtube(args[1]).then( data => {
 			      var teks = `*Youtube Video Downloader*\n\n*≻ Title :* ${data.title}\n*≻ Quality :* ${data.medias[1].quality}\n*≻ Size :* ${data.medias[1].formattedSize}\n*≻ Url Source :* ${data.url}\n\n_wait a minute sending media..._`
-			      conn.sendMessage(from, { video: { url: data.medias[1].url }, caption: teks }, { quoted: fvid })
+			      conn.sendMessage(from, { video: { url: data.medias[1].url }, caption: teks }, { quoted: msg })
 			      limitAdd(sender, limit)
 				}).catch(() => reply(mess.error.api))
 			    break
@@ -700,11 +701,11 @@ const fvid = {
 				break
 			case prefix+'cecan': case prefix+'cewek':
 			    if (isLimit(sender, isPremium, isOwner, limitCount, limit)) return reply (`Limit kamu sudah habis silahkan kirim ${prefix}limit untuk mengecek limit`)
-				fakeswa(mess.wait)
+				reply(mess.wait)
 			    var query = ["cecan hd","cecan indo","cewe cantik", "cewe aesthetic", "cecan aesthetic"]
                 var data = await pinterest(pickRandom(query))
 				var but = [{buttonId: `${command}`, buttonText: { displayText: "Next Photo" }, type: 1 }]
-				conn.sendMessage(from, { caption: "Random Cewe Cantik", image: { url: pickRandom(data.result) }, buttons: but, footer: 'Pencet tombol dibawah untuk foto selanjutnya' }, { quoted: fvid })
+				conn.sendMessage(from, { caption: "Random Cewe Cantik", image: { url: pickRandom(data.result) }, buttons: but, footer: 'Pencet tombol dibawah untuk foto selanjutnya' }, { quoted: msg })
 			    limitAdd(sender, limit)
  			    break
 			case prefix+'cogan': case prefix+'cowok':
@@ -766,8 +767,8 @@ const fvid = {
 			    break
 			case prefix+'yts': case prefix+'ytsearch':
 			    if (isLimit(sender, isPremium, isOwner, limitCount, limit)) return reply (`Limit kamu sudah habis silahkan kirim ${prefix}limit untuk mengecek limit`)
-			    if (args.length < 2) return fakeswa(`Kirim perintah ${command} query`)
-				fakeswa(mess.wait)
+			    if (args.length < 2) return reply(`Kirim perintah ${command} query`)
+				reply(mess.wait)
 			    yts(q).then( data => {
 				  let yt = data.videos
 				  var jumlah = 15
@@ -785,7 +786,7 @@ const fvid = {
 				  no += 1
 				  txt += `\n─────────────────\n\n*No Urutan : ${no.toString()}*\n*▢ Judul :* ${yt[i].title}\n*▢ ID :* ${yt[i].videoId}\n*▢ Channel :* ${yt[i].author.name}\n*▢ Upload :* ${yt[i].ago}\n*▢ Ditonton :* ${yt[i].views}\n*▢ Duration :* ${yt[i].timestamp}\n*▢ URL :* ${yt[i].url}\n`
 				}
-				conn.sendMessage(from, { image: { url: yt[0].image }, caption: txt }, { quoted: fvid })
+				conn.sendMessage(from, { image: { url: yt[0].image }, caption: txt }, { quoted: msg })
 				limitAdd(sender, limit)
 				}).catch(() => reply(mess.error.api))
 			    break
@@ -852,11 +853,11 @@ const fvid = {
 			    break
 			// Group Menu
 			case prefix+'linkgrup': case prefix+'link': case prefix+'linkgc':
-			    if (!isGroup) return fakeswa(mess.OnlyGrup)
-				if (!isBotGroupAdmins) return fakeswa(mess.BotAdmin)
-				var url = await conn.groupInviteCode(from).catch(() => fakeswa(mess.error.api))
+			    if (!isGroup) return reply(mess.OnlyGrup)
+				if (!isBotGroupAdmins) return reply(mess.BotAdmin)
+				var url = await conn.groupInviteCode(from).catch(() => reply(mess.error.api))
 			    url = 'https://chat.whatsapp.com/'+url
-				fakeswa(url)
+				reply(url)
 				break
 			case prefix+'setppgrup': case prefix+'setppgc':
 			    if (!isGroup) return reply(mess.OnlyGrup)
